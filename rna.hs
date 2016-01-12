@@ -1,7 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE ViewPatterns #-}
 
 import BasicPrelude hiding (FilePath)
+import qualified Data.Text as T
 import Shelly
 
 readAndEx :: FilePath -> Sh ()
@@ -16,7 +18,8 @@ readAndEx f = do
   writefile (newDir <> (fromText $ "parsa_output_" <> f')) output
 
 work :: Sh ()
-work = ((<> "RNAfiles") <$> pwd) >>= ls >>= mapM_ readAndEx
+work = ((<> "RNAfiles") <$> pwd) >>= ls >>= f >>= mapM_ readAndEx
+  where f = pure . filter (\(toTextIgnore -> fn) -> T.head fn /= '.')
 
 main :: IO ()
 main = shelly work
