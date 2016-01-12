@@ -9,7 +9,7 @@ readAndEx f = do
   let f' = toTextIgnore f
   newText <- ("-x " <>) <$> readfile f
   writefile "parsadata_erd_args" newText
-  output <- run "PARSA_ERD_linux_2_6" []
+  output <- run "./PARSA_ERD_linux_2_6" []
   let newDir = fromText $ "RNApic/pic_" <> f'
   mkdir_p newDir
   ls "pic" >>= mapM_ (\file -> cp file newDir)
