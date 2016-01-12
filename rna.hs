@@ -6,9 +6,17 @@ import BasicPrelude hiding (FilePath)
 import qualified Data.Text as T
 import Shelly
 
+---
+
+isHidden :: FilePath -> Bool
+isHidden = (== '.') . T.head . justTheFile
+
+justTheFile :: FilePath -> Text
+justTheFile (toTextIgnore -> f) = last $ T.splitOn "/" f
+
 readAndEx :: FilePath -> Sh ()
 readAndEx f = do
-  let f' = toTextIgnore f
+  let f' = justTheFile f
   putStrLn $ "EMRE: Working with file: " <> f'
   newText <- ("-x " <>) <$> readfile f
   writefile "parsadata_erd_args" newText
@@ -21,7 +29,7 @@ readAndEx f = do
 
 work :: Sh ()
 work = ((<> "RNAfiles") <$> pwd) >>= ls >>= f >>= mapM_ readAndEx
-  where f = pure . filter (\(toTextIgnore -> fn) -> T.head fn /= '.')
+  where f = pure . filter (not . isHidden)
 
 main :: IO ()
 main = shelly work
